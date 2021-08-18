@@ -1,30 +1,40 @@
-from bibliotheque_tic_tac_toe import *     
-    
+from bibliotheque_tic_tac_toe import *
+
+def test():
+    if test_win(JOUEUR, CARTE):
+        stdout.write("Victoire du joueur !!!\n")
+        return False
+    if test_win(IA, CARTE):
+        stdout.write("Victoire de l'IA !!!\n")
+        return False
+    if test_fin(CARTE):
+        print("Match nul !!!")
+        return False
+    return True
 def tour():
     if T == 1:
-        a = joueur_tour()
+        joueur_tour()
         afficher_jeu()
+        a = test()
         if a == False:
             return False
         b = ia_tour()
         afficher_jeu()
     if T == 2:
-        a = ia_tour()
+        ia_tour()
         afficher_jeu()
+        a= test()
         if a == False:
             return False
         b = joueur_tour()
         afficher_jeu()
-    if test_fin(CARTE):
-        print("Match nul !!!")
-        return False
-    return b
+    return test()
 
 def joueur_tour():
     ERREUR = True
     # Tour Joueur
     while ERREUR:
-        stdout.write("> \n")
+        stdout.write("> ")
         try : 
             i = int(stdin.readline()) - 1
         except:
@@ -35,24 +45,18 @@ def joueur_tour():
                 CARTE[x][y] = JOUEUR
                 ERREUR = False
     
-    if test_win(JOUEUR, CARTE):
-        stdout.write("Victoire du joueur !!!\n")
-        return False
     return True
 
 def ia_tour():
-    x,y = best_mouv(CARTE)
+    carte = deepcopy(CARTE)
+    x,y = best_mouv(carte)
     try:
         CARTE[x][y] = IA
     except:
         pass
-    if test_win(IA, CARTE):
-        stdout.write("Victoire de l'IA !!!\n")
-        return False
-    return True
 
 def afficher_jeu():
-    #clear()
+    
     stdout.write("----------\n")
     for ligne in CARTE:
         stdout.write("%s\n" %" ".join(ligne))
@@ -62,7 +66,7 @@ def main():
     CARTE = [[str(DIM*l+i) for i in range(1,DIM+1)] for l in range(DIM)]
 
     # Premier au deuxième joueur ?
-    stdout.write("1 ou 2 ? > \n")
+    stdout.write("1 ou 2 ? > ")
     T = stdin.readline()
     if T == "1\n" or T == "2\n":
         T = int(T)
