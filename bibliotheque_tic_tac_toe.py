@@ -1,6 +1,4 @@
 from sys import stdin,stdout
-from time import time
-from os import system
 from copy import deepcopy
 
 global deltas,positions, DIM, JOUEUR, IA,INF, DEPTH
@@ -10,6 +8,7 @@ INF = float('inf')
 DEPTH = 10
 deltas = [(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)]
 positions = [(x,y) for y in range(DIM) for x in range(DIM)]
+
 def valide_pos(x,y):
     return (0<= x < DIM and 0<= y < DIM)
     
@@ -77,9 +76,7 @@ def minimax(carte,depth, alpha, beta,ia):
                     return score
                 beta = min(score,beta)
                 
-        return score                          
-def clear():
-  system('cls')
+        return score
 
 """"
 def best_mouv2(carte):
