@@ -1,12 +1,13 @@
 from sys import stdin,stdout
 from time import time
 from os import system
-  
+from copy import deepcopy
+
 global deltas,positions, DIM, JOUEUR, IA,INF, DEPTH
 DIM = 3
 JOUEUR, IA = "X", "O"
 INF = float('inf')
-DEPTH = 9
+DEPTH = 10
 deltas = [(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)]
 positions = [(x,y) for y in range(DIM) for x in range(DIM)]
 def valide_pos(x,y):
@@ -30,6 +31,57 @@ def test_fin(carte):
 def game_over(carte):
     return (test_win(IA,carte) or test_win(JOUEUR,carte) or test_fin(carte))
 
+
+def best_mouv(carte):
+    best_score = -INF
+    for x, y in positions:
+        if carte[x][y].isdigit():
+            carte[x][y] = IA
+            score = minimax(carte,DEPTH, -INF, INF,False)
+            carte[x][y] = "0"
+            if score > best_score:
+                best_score = score
+                best = (x,y)
+    print(best, best_score)
+    return best
+    
+def minimax(carte,depth, alpha, beta,ia):
+    # Match gagnant
+    if test_win(IA,carte): return depth
+    if test_win(JOUEUR,carte): return -depth
+    # Match nul
+    if depth == 0 or test_fin(carte):
+        return 0
+    
+    if ia:
+        score = -INF
+        for x,y in positions:
+            if carte[x][y].isdigit():
+                carte[x][y] = IA
+                score = max(score,minimax(carte, depth - 1, alpha, beta, False))
+                carte[x][y]= "0"
+                
+                if score >= beta:
+                   return score
+                alpha = max(alpha, score)
+                
+        return score
+    else:
+        score = INF
+        for x,y in positions:
+            if carte[x][y].isdigit():
+                carte[x][y] = JOUEUR
+                score = min(score,minimax(carte, depth - 1, alpha, beta, True))
+                carte[x][y]= "0"
+                if alpha >= score:
+                    return score
+                beta = min(score,beta)
+                
+        return score                          
+def clear():
+  system('cls')
+
+""""
 def best_mouv2(carte):
     best_score = -INF
     best = (DIM,DIM)
@@ -43,9 +95,6 @@ def best_mouv2(carte):
                 best = (x,y)
     print(best, best_score)
     return best
-
-def best_mouv(carte):
-    return minimax(carte,DEPTH, -INF, INF,True)
 def minimax2(carte,depth,score,ia):
     if depth == 0 or game_over(carte):
         return depth
@@ -67,49 +116,4 @@ def minimax2(carte,depth,score,ia):
                     return -INF
                 carte[x][y]= str(x*DIM+y+1)
         return minimax2(carte, depth - 1,score, True)
-def minimax(carte,depth, alpha, beta,ia):
-    joueur = IA if ia else JOUEUR
-    non_joueur = JOUEUR if ia else IA
-    
-    # Match nul
-    if depth == 0 or test_fin(carte):
-        return 0
-
-    # Match gagnant
-    if test_win(IA,carte): return depth
-    if test_win(JOUEUR,carte): return -depth
-    
-    if ia:
-        maxEval = -INF
-        for x,y in positions:
-            if carte[x][y].isdigit():
-                carte[x][y] = IA
-                score = minimax(carte, depth - 1, alpha, beta, False)
-                carte[x][y]= str(x*DIM+y+1)
-                if depth == DEPTH and score > maxEval:
-                    maxEval = score
-                    best = (x,y)
-                else:
-                    maxEval = max(maxEval, score)
-                alpha = max(alpha, score)
-                if beta < alpha:
-                   break
-        if depth == DEPTH:
-            return best
-        return maxEval
-    else:
-        minEval = INF
-        for x,y in positions:
-            if carte[x][y].isdigit():
-                carte[x][y] = JOUEUR
-                score = minimax(carte, depth - 1, alpha, beta, True)
-                carte[x][y]= str(x*DIM+y+1)
-                minEval = min(minEval, score)
-                beta = min(score,beta)
-                if beta < alpha:
-                    break
-                
-        return minEval
-                
-def clear():
-  system('cls')
+"""
